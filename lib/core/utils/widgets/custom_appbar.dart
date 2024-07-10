@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:m_bloc_office/core/values/base_colors.dart';
 
 class CustomAppBar extends AppBar implements PreferredSizeWidget {
   final Widget? customLeading;
@@ -12,6 +13,7 @@ class CustomAppBar extends AppBar implements PreferredSizeWidget {
   final VoidCallback? customLeadingOnPressed;
 
   final bool automaticallyImplyLeading;
+  final bool centerTitle;
 
   final SystemUiOverlayStyle? systemOverlayStyle;
    CustomAppBar({
@@ -25,7 +27,9 @@ class CustomAppBar extends AppBar implements PreferredSizeWidget {
     this.customLeadingOnPressed,
      this.systemOverlayStyle,
       required this.automaticallyImplyLeading,
+      required this.centerTitle,
   }) : super(
+     centerTitle: centerTitle,
      surfaceTintColor: Colors.transparent,
      automaticallyImplyLeading: automaticallyImplyLeading,
      titleSpacing: titleSpacing,
@@ -40,7 +44,7 @@ class CustomAppBar extends AppBar implements PreferredSizeWidget {
   {
     return AppBar(
       scrolledUnderElevation: 0.0,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: BaseColors.canvasColor,
       titleSpacing: titleSpacing ?? 0,
       automaticallyImplyLeading: automaticallyImplyLeading,
       systemOverlayStyle: systemOverlayStyle ?? const SystemUiOverlayStyle(

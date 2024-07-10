@@ -43,7 +43,7 @@ class ThemeStyle {
             fontWeight: FontWeight.w100,
             fontFamily:fontFamily
         ),
-          titleLarge: TextStyle(color: BaseColors.widgetColor,
+          titleLarge: TextStyle(color: BaseColors.allOfficeTextColor,
           fontSize: 18.sp,
           fontWeight: FontWeight.w600,
           fontFamily:fontFamily

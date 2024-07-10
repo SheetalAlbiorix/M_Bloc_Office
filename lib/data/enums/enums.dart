@@ -1,7 +1,6 @@
 enum SignType {
   email,
-  google,
-  apple,
+
 
 }
 

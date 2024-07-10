@@ -24,6 +24,7 @@ class CustomTextFormField extends StatelessWidget {
   final BoxConstraints? prefixIconConstraints;
   final BoxConstraints? suffixIconConstraints;
   final TextStyle? hintStyle;
+  final double? height;
 
   const CustomTextFormField(
       {super.key,
@@ -42,86 +43,79 @@ class CustomTextFormField extends StatelessWidget {
       this.onFieldSubmitted,
       this.prefixIconConstraints,
         this.suffixIconConstraints,
-      this.readOnly,this.hintStyle});
+      this.readOnly,this.hintStyle, this.height});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 80.h,
+      height: height ?? 48.h,
       width: 360.w,
-      child: PhysicalModel(
-        color: Colors.transparent,
-        // Transparent for background color
-        borderRadius: BorderRadius.circular(12.0),
-        elevation: 0.0,
-        shadowColor: Colors.black.withOpacity(0.3),
-        child: TextFormField(
-          readOnly: readOnly ?? false,
-          onFieldSubmitted: onFieldSubmitted,
-          onTap: onTap,
-          textAlign: TextAlign.left,
-          enabled: enabled,
-          obscureText: obscureText ?? false,
-          focusNode: focusNode,
-          maxLines: 1,
-          onChanged: onChanged,
-          controller: controller,
-          decoration: InputDecoration(
-            focusedErrorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              borderSide: BorderSide(
-                color: Colors.transparent,
-              ),
+      child: TextFormField(
+        readOnly: readOnly ?? false,
+        onFieldSubmitted: onFieldSubmitted,
+        onTap: onTap,
+        textAlign: TextAlign.left,
+        enabled: enabled,
+        obscureText: obscureText ?? false,
+        focusNode: focusNode,
+        maxLines: 1,
+        onChanged: onChanged,
+        controller: controller,
+        decoration: InputDecoration(
+          focusedErrorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide(
+              color: Colors.transparent,
             ),
-            errorBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              borderSide: BorderSide(
-                color: BaseColors.whiteColor,
-              ),
-            ),
-            focusedBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              borderSide: BorderSide(
-                color: BaseColors.whiteColor,
-                width: 2.0,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-            hintText: labelText ?? "",
-
-            enabledBorder: const OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12.0)),
-              borderSide: BorderSide(
-                color: BaseColors.whiteColor,
-                width: 2.0,
-              ),
-            ),
-            filled: true,
-            hintTextDirection: TextDirection.ltr,
-            fillColor: BaseColors.whiteColor,
-            prefixIconConstraints: prefixIconConstraints ?? BoxConstraints(minWidth: 40.w, maxHeight: 20.h),
-            suffixIconConstraints: suffixIconConstraints ??BoxConstraints(minWidth: 40.w,),
-            prefixIcon: prefixIcon != null
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: prefixIcon)
-                : null,
-            hintStyle: hintStyle ??
-                getTheme(context: context).textTheme.labelLarge?.copyWith(
-                      color: BaseColors.textHintColor,
-                    ),
-            suffixIcon:  suffixIcon !=null ?
-            InkWell(
-              onTap: onPressed,
-              child:Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: suffixIcon,
-              ),
-            ) : null
-        ,            border: const OutlineInputBorder(),
           ),
-          validator: validator,
+          errorBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide(
+              color: BaseColors.whiteColor,
+            ),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide(
+              color: BaseColors.whiteColor,
+              width: 2.0,
+            ),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+          hintText: labelText ?? "",
+
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            borderSide: BorderSide(
+              color: BaseColors.whiteColor,
+              width: 2.0,
+            ),
+          ),
+          filled: true,
+          hintTextDirection: TextDirection.ltr,
+          fillColor: BaseColors.whiteColor,
+          prefixIconConstraints: prefixIconConstraints ?? BoxConstraints(minWidth: 40.w, maxHeight: 20.h),
+          suffixIconConstraints: suffixIconConstraints ??BoxConstraints(minWidth: 40.w,),
+          prefixIcon: prefixIcon != null
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: prefixIcon)
+              : null,
+          hintStyle: hintStyle ??
+              getTheme(context: context).textTheme.labelLarge?.copyWith(
+                    color: BaseColors.textHintColor.withOpacity(0.6),
+                  ),
+          suffixIcon:  suffixIcon !=null ?
+          InkWell(
+            onTap: onPressed,
+            child:Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: suffixIcon,
+            ),
+          ) : null
+      ,            border: const OutlineInputBorder(),
         ),
+        validator: validator,
       ),
     );
   }

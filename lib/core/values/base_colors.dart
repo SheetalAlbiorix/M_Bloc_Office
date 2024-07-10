@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 class BaseColors{
 
   static  const Color blackColor =  Color(0xff000000);
+  static  const Color searchColor =  Color(0xff22282F);
+  static  const Color cancelbtnColor =  Color(0xff0D4477);
+  static  const Color btnColor =  Color(0xff489DDA);
+  static  const Color dltBtnColor =  Color(0xffF44336);
+
   static  const Color allOfficeTextColor =  Color(0xff484954);
   static  const Color dotActiveColor =  Color(0xffFAC840);
   static  const Color imageBgColor =  Color(0xffE8F1FF);
@@ -16,7 +21,7 @@ class BaseColors{
   static  const Color   widgetColor =  Color(0xff202244);
   static  const Color   titleColor =  Color(0xffE8F1FF);
   static  const Color   textAndIconColor =  Color(0xff545454);
-  static  const Color   textHintColor =  Color(0xff505050);
+  static  const Color   textHintColor =  Color(0xff1E293B);
   static  const Color   widgetBackgroundColor =  Color(0xff167F71);
   static  const Color   recentTextColor =  Color(0xffA0A4AB);
   static  const Color   categoryNameColor =  Color(0xffFF6B00);
