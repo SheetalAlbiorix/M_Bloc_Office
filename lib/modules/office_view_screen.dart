@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:m_bloc_office/core/utils/extensions/base_extensions.dart';
 import 'package:m_bloc_office/core/utils/functions/base_funcations.dart';
+import 'package:m_bloc_office/core/utils/helpers/key.dart';
 import 'package:m_bloc_office/core/utils/widgets/custom_button.dart';
 import 'package:m_bloc_office/core/utils/widgets/custom_textformfield.dart';
 import 'package:m_bloc_office/core/values/base_strings.dart';
+import 'package:m_bloc_office/data/model/new_office_modle.dart';
+import 'package:m_bloc_office/data/services/repository.dart';
+import 'package:m_bloc_office/modules/new_office/new_office_bloc.dart';
+import 'package:m_bloc_office/modules/new_office/new_office_bloc.dart';
+import '../core/utils/helpers/validators.dart';
 import '../core/utils/widgets/custom_appbar.dart';
 import '../core/utils/widgets/detail_widgets.dart';
 import '../core/values/base_assets.dart';
 import '../core/values/base_colors.dart';
 import '../data/model/staff_model.dart';
+import '../data/provider/db_provider.dart';
 import '../routes/routes.dart';
+import 'new_office/new_office_bloc.dart';
 
 class OfficeViewScreen extends StatefulWidget {
-  const OfficeViewScreen({super.key});
+  final OfficeModel? officeModel;
+
+  const OfficeViewScreen({super.key, this.officeModel});
 
   @override
   State<OfficeViewScreen> createState() => _OfficeViewScreenState();
@@ -29,6 +40,8 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
   final TextEditingController lastNameContr = TextEditingController();
   final PageController pageController = PageController(initialPage: 0);
   int currentPage = 0;
+  AllKey allKey = AllKey();
+  String selectedAvatarPath = '';
 
   void isExpanded() {
     setState(() {
@@ -36,9 +49,14 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
     });
   }
 
+  // void selectAvatar(String path) {
+  //   setState(() {
+  //     selectedAvatarPath = path;
+  //   });
+  // }
+
   void nextPage() {
     if (currentPage < 2) {
-
       pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -46,26 +64,30 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
     }
   }
 
-  List<StaffModel> staffList = [
-    StaffModel(
-        avtar: BaseAssets.avtarOne, name: "Jacques", lastName: "Jordaan"),
-    StaffModel(
-        avtar: BaseAssets.avtarTwo, name: "Daniel ", lastName: "Novitzkas"),
-    StaffModel(
-        avtar: BaseAssets.avtarThree, name: "Jacques", lastName: "Jordaan"),
-    StaffModel(
-        avtar: BaseAssets.avtarFour, name: "Jacques", lastName: "Jordaan"),
-    StaffModel(
-        avtar: BaseAssets.avtarFive, name: "Jacques", lastName: "Jordaan"),
-    StaffModel(
-        avtar: BaseAssets.avtarSix, name: "Jacques", lastName: "Jordaan"),
-    StaffModel(
-        avtar: BaseAssets.avtarSeven, name: "Jacques", lastName: "Jordaan"),
+  List<String> avatatList = [
+    BaseAssets.avtarOne,
+    BaseAssets.avtarTwo,
+    BaseAssets.avtarThree,
+    BaseAssets.avtarFour,
+    BaseAssets.avtarFive,
+    BaseAssets.avtarSix,
+    BaseAssets.avtarSeven,
   ];
+
+  // List<StaffModel> staffList = [
+  //   StaffModel(
+  //       avtar: BaseAssets.avtarOne,
+  //       name: "Jacques",
+  //       lastName: "Jordaan",
+  //       officeId: 1,
+  //       id: 1),
+  // ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider(
+  create: (context) => NewOfficeBloc(OfficeRepository(officeDatabase: OfficeDatabase.instance))..add(FetchOfficeStaff()),
+  child: Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -76,9 +98,16 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
           backgroundColor: const Color(0xff0D4477),
           onPressed: () {
             showDialog(
+              barrierDismissible: true,
               context: context,
               builder: (context) {
-                return addStaffMemberDialog(context);
+                return BlocProvider(
+                  create: (context) => NewOfficeBloc(OfficeRepository(
+                      officeDatabase: OfficeDatabase.instance)),
+                  child: StatefulBuilder(builder: (context, setState) {
+                    return addStaffMemberDialog(context);
+                  }),
+                );
               },
             );
           },
@@ -111,12 +140,15 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                   bottom: 0,
                   child: Container(
                     width: 10,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10)),
                       gradient: LinearGradient(
-                        colors: [Colors.blue, Colors.transparent],
+                        colors: [
+                          BaseColors.blackColors.withOpacity(0.7),
+                          BaseColors.blackColors
+                        ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
@@ -137,7 +169,7 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                                   context, BaseRoute.officeViewScreen);
                             },
                             child: Text(
-                              "Specno",
+                              widget.officeModel?.name ?? "",
                               style: getTheme(context: context)
                                   .textTheme
                                   .headlineMedium
@@ -158,7 +190,8 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                           SvgPicture.asset(BaseAssets.peopleOverView),
                           12.toHSB,
                           Text.rich(TextSpan(
-                              text: '5 ',
+                              text:
+                                  "${widget.officeModel?.capacity.toString()} ",
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w700,
@@ -216,17 +249,24 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                             children: [
                               12.toVSB,
                               customIconWithText(
-                                  BaseAssets.callIcon, "082 364 9864", context),
+                                  BaseAssets.callIcon,
+                                  widget.officeModel?.phoneNumber.toString() ??
+                                      "",
+                                  context),
                               12.toVSB,
-                              customIconWithText(BaseAssets.mailIcon,
-                                  "info@specno.com", context),
+                              customIconWithText(
+                                  BaseAssets.mailIcon,
+                                  widget.officeModel?.email.toString() ?? "",
+                                  context),
                               12.toVSB,
-                              customIconWithText(BaseAssets.peopledIcon,
-                                  "Office Capacity: 25 ", context),
+                              customIconWithText(
+                                  BaseAssets.peopledIcon,
+                                  "Office Capacity: ${widget.officeModel?.capacity.toString()}",
+                                  context),
                               12.toVSB,
                               customIconWithText(
                                   BaseAssets.locationIcon,
-                                  "10 Willie Van Schoor Dr, Bo Oakdale, Cape Town, 7530",
+                                  widget.officeModel?.address.toString() ?? "",
                                   context),
                             ],
                           ),
@@ -268,143 +308,205 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
             ],
           ).paddingOnly(left: 12, right: 24),
           13.toVSB,
-          Expanded(
-            child: ListView.builder(
-              itemCount: staffList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  trailing: IconButton(
-                      onPressed: () {
+          BlocBuilder<NewOfficeBloc,NewOfficeState>(
+           builder: (context, state)
+           {
+             if(state is OfficeStaffLoaded) {
+                return  Expanded(
+               child: ListView.builder(
+                 itemCount: state.staff?.length,
+                 itemBuilder: (context, index) {
+                   return ListTile(
+                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                     trailing: IconButton(
+                         onPressed: () {
+                           showDialog(
+                             context: context,
+                             builder: (context) =>
+                                 staffMemberMoreOptionDialog(context),
+                           );
+                         },
+                         icon: const Icon(
+                           Icons.more_vert,
+                           size: 24,
+                         )),
+                     leading: CircleAvatar(
+                       child: SvgPicture.asset(state.staff![index].avtar),
+                     ),
+                     title: Text(
+                         "${state.staff?[index].name} ${state.staff?[index].lastName}"),
+                   );
+                 },
+               ),
+             );
+             }
+             return SizedBox();
+           },
 
-                        showDialog(context: context, builder: (context) => staffMemberMoreOptionDialog(context),);
-                      },
-                      icon: const Icon(
-                        Icons.more_vert,
-                        size: 24,
-                      )),
-                  leading: CircleAvatar(
-                    child: SvgPicture.asset(staffList[index].avtar),
-                  ),
-                  title: Text(
-                      "${staffList[index].name} ${staffList[index].lastName}"),
-                );
-              },
-            ),
           )
         ],
       ),
-    );
+    ),
+);
   }
-Widget addStaffMemberDialog(BuildContext context){
+
+  Widget addStaffMemberDialog(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: const Color(0xffF8FAFC),
-      titlePadding:
-      const EdgeInsets.symmetric( vertical: 10),
+      titlePadding: const EdgeInsets.symmetric(vertical: 10),
       title: ListTile(
-        horizontalTitleGap: 1,
-contentPadding: const EdgeInsets.only(left: 8,right: 10),
-         leading:  Visibility(child: currentPage == 1 ?  IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_sharp)):SizedBox.shrink()),
-         title:  Text(
+          horizontalTitleGap: 1,
+          contentPadding: const EdgeInsets.only(left: 8, right: 10),
+          leading: Visibility(
+              child: currentPage == 1
+                  ? IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.arrow_back_sharp))
+                  : const SizedBox.shrink()),
+          title: Text(
             textAlign: TextAlign.left,
             BaseStrings.newStaffMember,
             style: getTheme(context: context)
                 .textTheme
                 .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w800,fontSize: 18.sp),
+                ?.copyWith(fontWeight: FontWeight.w800, fontSize: 18.sp),
           ),
-         trailing:  SvgPicture.asset(BaseAssets.closeCircle)
-
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 100.h,
-            child: PageView(
-              onPageChanged: (int page) {
-                setState(() {
-                  currentPage = page;
-                });
+          trailing: GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
               },
+              child: SvgPicture.asset(BaseAssets.closeCircle))),
+      content: BlocBuilder<NewOfficeBloc, NewOfficeState>(
+        builder: (context, state) {
+          if (state is avatarSelected) {
+            selectedAvatarPath = state.avtar ?? "";
+          }
+          return Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            key: allKey.addStaffFormKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomTextFormField(
-                        labelText: BaseStrings.firstName,
-                        controller: firstNameContr,
-                        onChanged: (val) {}),
-                    CustomTextFormField(
-                        labelText: BaseStrings.firstName,
-                        controller: firstNameContr,
-                        onChanged: (val) {})
-                  ],
-                ),
                 SizedBox(
-                  height: 52.h,
-                  width: 52.w, // 5 avatars * (radius * 2 + spacing)
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 10, // Space between avatars
-                    runSpacing: 20, // Space between rows
-                    children: List.generate(7, (index) {
-                      return CircleAvatar(
-                        radius: 24.w,
-                        child: SvgPicture.asset(staffList[index].avtar),
-                      );
-                    }),
+                  height: 110.h,
+                  child: PageView(
+                    onPageChanged: (int page) {
+                      setState(() {
+                        currentPage = page;
+                      });
+                    },
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomTextFormField(
+                              labelText: BaseStrings.firstName,
+                              controller: firstNameContr,
+                              validator: (val) {
+                                return validateFirstName(val);
+                              },
+                              onChanged: (val) {}),
+                          10.toVSB,
+                          CustomTextFormField(
+                            labelText: BaseStrings.lastName,
+                            controller: lastNameContr,
+                            onChanged: (val) {},
+                            validator: (val) {
+                              return validateLastName(val);
+                            },
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 52.h,
+                        width: 52.w, // 5 avatars * (radius * 2 + spacing)
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 10, // Space between avatars
+                          runSpacing: 20, // Space between rows
+                          children: List.generate(7, (index) {
+                            final avatarPath = avatatList[index];
+
+                            return GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<NewOfficeBloc>()
+                                    .add(SelectAvatar(avatarPath));
+                                 selectedAvatarPath=avatarPath;
+                              },
+                              child: CircleAvatar(
+                                radius: 24.w,
+                                backgroundColor: state is avatarSelected && state.avtar == avatarPath
+                                    ? Colors.blue.withOpacity(0.3)
+                                    : Colors.transparent,
+                                child: SvgPicture.asset(avatarPath),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
                   ),
+                ),
+                10.toVSB,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List<Widget>.generate(2, (int index) {
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      height: 10,
+                      width: 10,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: currentPage == index ? Colors.blue : Colors.grey,
+                      ),
+                    );
+                  }),
                 ),
               ],
             ),
-          ),
-          10.toVSB,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List<Widget>.generate(2, (int index) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: 10,
-                width: 10,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: currentPage == index
-                      ? Colors.blue
-                      : Colors.grey,
-                ),
-              );
-            }),
-          ),
-        ],
+          );
+        },
       ),
       actions: [
-      currentPage == 0 ?  CustomButton(
-          labelText: BaseStrings.next,
-          onPressed: () {
-            nextPage;
-          },
-        ) : CustomButton(
-        labelText: BaseStrings.addstaffmember,
-        onPressed: () {
-
-        },
-      )
+        currentPage == 0
+            ? CustomButton(
+                labelText: BaseStrings.next,
+                onPressed: () {
+                  if (allKey.addStaffFormKey.currentState!.validate()) {
+                    nextPage();
+                  }
+                },
+              )
+            : CustomButton(
+                labelText: BaseStrings.addstaffmember,
+                onPressed: () {
+                  if (allKey.addStaffFormKey.currentState!.validate() &&
+                      selectedAvatarPath.isNotEmpty) {
+                    final staff = StaffModel(
+                      id:0,
+                      lastName: lastNameContr.text,
+                      name: '${firstNameContr.text} ${lastNameContr.text}',
+                      avtar: selectedAvatarPath,
+                      officeId: widget.officeModel!.id.toString(),
+                    );
+                    context.read<NewOfficeBloc>().add(AddStaff(staff));
+                    Navigator.pop(context);
+                  }
+                  ;
+                })
       ],
     );
-}
+  }
 
-Widget staffMemberMoreOptionDialog(BuildContext context) {
+  Widget staffMemberMoreOptionDialog(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: const Color(0xffF8FAFC),
-      titlePadding:
-      const EdgeInsets.symmetric( vertical: 10),
-      title:null,
+      titlePadding: const EdgeInsets.symmetric(vertical: 10),
+      title: null,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -412,85 +514,101 @@ Widget staffMemberMoreOptionDialog(BuildContext context) {
             labelText: BaseStrings.editStaff.toUpperCase(),
             onPressed: () {
               Navigator.of(context).pop();
-              showDialog(context: context, builder: (context) => editStaffMemberDialog(context));
-
+              showDialog(
+                  context: context,
+                  builder: (context) => editStaffMemberDialog(context));
             },
           ),
           10.toVSB,
-           TextButton(onPressed:(){
-             showDialog(context: context,builder: (context) =>     deleteStaffMemberMoreOptionDialog(context),);
-
-
-           }, child: Text(BaseStrings.deleteStaff.toUpperCase(),style:getTheme(context: context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,color: BaseColors.btnColor),) ,)
+          TextButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) =>
+                    deleteStaffMemberMoreOptionDialog(context),
+              );
+            },
+            child: Text(
+              BaseStrings.deleteStaff.toUpperCase(),
+              style: getTheme(context: context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w500, color: BaseColors.btnColor),
+            ),
+          )
         ],
       ),
-
     );
-}
-Widget deleteStaffMemberMoreOptionDialog(BuildContext context){
+  }
+
+  Widget deleteStaffMemberMoreOptionDialog(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: const Color(0xffF8FAFC),
-      titlePadding:
-      const EdgeInsets.symmetric( vertical: 10),
-      title:Row(
+      titlePadding: const EdgeInsets.symmetric(vertical: 10),
+      title: Row(
         children: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_sharp)),
+          IconButton(
+              onPressed: () {}, icon: const Icon(Icons.arrow_back_sharp)),
           SizedBox(
             width: 220.w,
             child: Text(
               maxLines: 2,
               textAlign: TextAlign.left,
               BaseStrings.deleteStaffTxt,
-              style: getTheme(context: context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(fontWeight: FontWeight.w700,fontSize: 20.sp,fontFamily: BaseStrings.interRegular,),
+              style:
+                  getTheme(context: context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 20.sp,
+                        fontFamily: BaseStrings.interRegular,
+                      ),
             ),
           ),
-        ],),
+        ],
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           CustomButton(
-BackgroundColor: BaseColors.dltBtnColor,
+            BackgroundColor: BaseColors.dltBtnColor,
             labelText: BaseStrings.deleteOffice.toUpperCase(),
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
           10.toVSB,
-           TextButton(onPressed:null, child: Text(BaseStrings.keepOffice.toUpperCase(),style:getTheme(context: context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500,color: BaseColors.btnColor),) ,)
+          TextButton(
+            onPressed: null,
+            child: Text(
+              BaseStrings.keepOffice.toUpperCase(),
+              style: getTheme(context: context).textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w500, color: BaseColors.btnColor),
+            ),
+          )
         ],
       ),
-
     );
-}
+  }
 
-
-  Widget editStaffMemberDialog(BuildContext context){
+  Widget editStaffMemberDialog(BuildContext context) {
     return AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: const Color(0xffF8FAFC),
-      titlePadding:
-      const EdgeInsets.symmetric( vertical: 10),
+      titlePadding: const EdgeInsets.symmetric(vertical: 10),
       title: ListTile(
           horizontalTitleGap: 1,
-          contentPadding: const EdgeInsets.only(left: 8,right: 10),
-          leading:  Visibility(child: currentPage == 1 ?  IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back_sharp)):SizedBox.shrink()),
-          title:  Text(
+          contentPadding: const EdgeInsets.only(left: 8, right: 10),
+          leading: Visibility(
+              child: currentPage == 1
+                  ? IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.arrow_back_sharp))
+                  : SizedBox.shrink()),
+          title: Text(
             textAlign: TextAlign.left,
             BaseStrings.editStaffMember,
             style: getTheme(context: context)
                 .textTheme
                 .headlineSmall
-                ?.copyWith(fontWeight: FontWeight.w800,fontSize: 18.sp),
+                ?.copyWith(fontWeight: FontWeight.w800, fontSize: 18.sp),
           ),
-          trailing:  SvgPicture.asset(BaseAssets.closeCircle)
-
-      ),
+          trailing: SvgPicture.asset(BaseAssets.closeCircle)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -526,7 +644,7 @@ BackgroundColor: BaseColors.dltBtnColor,
                     children: List.generate(7, (index) {
                       return CircleAvatar(
                         radius: 24.w,
-                        child: SvgPicture.asset(staffList[index].avtar),
+                        child: SvgPicture.asset(avatatList[index]),
                       );
                     }),
                   ),
@@ -545,9 +663,7 @@ BackgroundColor: BaseColors.dltBtnColor,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: currentPage == index
-                      ? Colors.blue
-                      : Colors.grey,
+                  color: currentPage == index ? Colors.blue : Colors.grey,
                 ),
               );
             }),
@@ -555,21 +671,20 @@ BackgroundColor: BaseColors.dltBtnColor,
         ],
       ),
       actions: [
-        currentPage == 0 ?  CustomButton(
-          labelText: BaseStrings.next,
-          onPressed: () {
-            nextPage;
-          },
-        ) : CustomButton(
-          labelText: BaseStrings.addstaffmember,
-          onPressed: () {
-
-          },
-        )
+        currentPage == 0
+            ? CustomButton(
+                labelText: BaseStrings.next,
+                onPressed: () {
+                  nextPage;
+                },
+              )
+            : CustomButton(
+                labelText: BaseStrings.addstaffmember,
+                onPressed: () {},
+              )
       ],
     );
   }
-
 
   @override
   void dispose() {

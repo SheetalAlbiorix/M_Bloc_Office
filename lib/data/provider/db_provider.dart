@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:m_bloc_office/data/model/new_office_modle.dart';
+import 'package:m_bloc_office/data/model/staff_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -23,7 +25,7 @@ class OfficeDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,  // Increment the version number
       onCreate: createDB,
     );
   }
@@ -44,6 +46,17 @@ class OfficeDatabase {
       color $textType
     )
     ''');
+
+    await db.execute('''
+    CREATE TABLE staff ( 
+      id $idType, 
+      name $textType,
+      lastName $textType,
+      avtar $textType,
+      officeId $intType
+    )
+    ''');
+    debugPrint("Created table: staff");
   }
 
   Future<OfficeModel> create(OfficeModel office) async {
@@ -61,6 +74,59 @@ class OfficeDatabase {
 
     return result.map((json) => OfficeModel.fromMap(json)).toList();
   }
+
+
+  Future<void> update(OfficeModel office) async {
+    final db = await instance.database;
+    await db.update(
+      'offices',
+      office.toMap(),
+      where: 'id = ?',
+      whereArgs: [office.id],
+    );
+  }
+
+
+  Future<void> delete(int id) async {
+    final db = await instance.database;
+    await db.delete(
+      'offices',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+
+
+  ///Staff DB
+  Future<StaffModel> createStaff(StaffModel staff) async {
+    final db = await instance.database;
+
+    final id = await db.insert('staff', staff.toMap());
+    return staff.copyWith(id: id);
+  }
+
+  Future<List<StaffModel>> readAllStaff() async {
+    final db = await instance.database;
+
+    const orderBy = 'name ASC';
+    final result = await db.query('staff', orderBy: orderBy);
+
+    return result.map((json) => StaffModel.fromMap(json)).toList();
+  }
+
+  Future<List<StaffModel>> readStaffByOffice(int officeId) async {
+    final db = await instance.database;
+
+    final result = await db.query(
+      'staff',
+      where: 'officeId = ?',
+      whereArgs: [officeId],
+    );
+
+    return result.map((json) => StaffModel.fromMap(json)).toList();
+  }
+
 
   Future close() async {
     final db = await instance.database;

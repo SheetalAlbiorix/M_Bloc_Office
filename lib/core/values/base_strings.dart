@@ -4,8 +4,11 @@ class BaseStrings {
 
 
   static const String allOffices = "All Offices";
+  static const String officeAddedSuccessfully = "Office added successfully!";
+  static const String officeUpdateSuccessfully = "Office updated successfully!";
   static const String Office = "Office";
   static const String addOffice = "Add Office";
+  static const String updateOffice = "Update Office";
 
   static const String staffMemberInOffice = "Staff Members in Office";
   static const String next = "Next";
@@ -16,6 +19,8 @@ class BaseStrings {
   static const String keepOffice = "Keep Office";
 
   static const String newOffice = "New Office";
+  static const String editOffice = "Edit Office";
+
 
   static const String officeName = "Office Name";
   static const String physicalAddress = "Physical Address";

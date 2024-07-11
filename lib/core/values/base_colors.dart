@@ -5,6 +5,7 @@ class BaseColors{
   static  const Color blackColor =  Color(0xff000000);
   static  const Color searchColor =  Color(0xff22282F);
   static  const Color cancelbtnColor =  Color(0xff0D4477);
+  static  const Color selectColorBorder =  Color(0xff475569);
   static  const Color btnColor =  Color(0xff489DDA);
   static  const Color dltBtnColor =  Color(0xffF44336);
 

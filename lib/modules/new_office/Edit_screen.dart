@@ -11,7 +11,7 @@ import 'package:m_bloc_office/core/utils/widgets/custom_textformfield.dart';
 import 'package:m_bloc_office/core/values/base_strings.dart';
 import 'package:m_bloc_office/data/model/new_office_modle.dart';
 import 'package:m_bloc_office/data/services/repository.dart';
-
+import 'package:m_bloc_office/modules/office_bloc.dart';
 import 'package:m_bloc_office/routes/routes.dart';
 import '../../core/utils/helpers/validators.dart';
 import '../../core/values/base_colors.dart';
@@ -19,14 +19,16 @@ import '../../data/enums/enums.dart';
 import '../../data/provider/db_provider.dart';
 import 'new_office_bloc.dart';
 
-class NewOfficeScreen extends StatefulWidget {
-  const NewOfficeScreen({super.key});
+class EditOfficeScreen extends StatefulWidget {
+  final OfficeModel? office;
+
+  const EditOfficeScreen({super.key, required this.office});
 
   @override
-  State<NewOfficeScreen> createState() => _NewOfficeScreenState();
+  State<EditOfficeScreen> createState() => _EditOfficeScreenState();
 }
 
-class _NewOfficeScreenState extends State<NewOfficeScreen> {
+class _EditOfficeScreenState extends State<EditOfficeScreen> {
   List<Color> colorList = [
     const Color(0xffFFBE0B),
     const Color(0xffFF9B71),
@@ -44,7 +46,7 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
   final TextEditingController ofcNameController = TextEditingController();
   final TextEditingController ofcAddressController = TextEditingController();
   final TextEditingController ofcEmailAddressController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController ofCapacityController = TextEditingController();
 
@@ -56,7 +58,7 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
 
   void disposeController() {
     ofcNameController.dispose();
-    ofcNameController.dispose();
+    phoneNumberController.dispose();
     ofcEmailAddressController.dispose();
     ofCapacityController.dispose();
   }
@@ -64,11 +66,26 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
   AllKey allKey = AllKey();
 
   @override
+  void initState() {
+    if (widget.office != null) {
+      ofcNameController.text = widget.office?.name ?? "";
+      phoneNumberController.text = widget.office?.phoneNumber ?? "";
+      ofCapacityController.text = widget.office?.capacity.toString() ?? "";
+      ofcAddressController.text = widget.office?.address ?? "";
+      ofcEmailAddressController.text = widget.office?.email ?? "";
+      String? colorString = widget.office?.color;
+      if (colorString != null) {
+        selectedColor = Color(int.parse(colorString.substring(6, 16)));
+      }
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          NewOfficeBloc(
-              OfficeRepository(officeDatabase: OfficeDatabase.instance)),
+      create: (context) => NewOfficeBloc(
+          OfficeRepository(officeDatabase: OfficeDatabase.instance)),
       child: Scaffold(
           backgroundColor: BaseColors.canvasColor,
           appBar: CustomAppBar(
@@ -76,7 +93,7 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
             centerTitle: true,
             titleSpacing: 0,
             customTitle: Text(
-              BaseStrings.newOffice,
+              BaseStrings.editOffice,
               style: getTheme(context: context)
                   .textTheme
                   .headlineLarge
@@ -88,24 +105,28 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
             listener: (context, state) {
               if (state is OfficeLoading) {
                 const CircularProgressIndicator();
-              }
-              else if (state is ColorSelected) {
+              } else if (state is ColorSelected) {
                 selectedColor = state.selectedColor;
-              }
-              else if (state is OfficeAdded) {
-                showCustomSnackBar(context: context, message: BaseStrings.officeAddedSuccessfully,
+              } else if (state is OfficeAdded) {
+                showCustomSnackBar(
+                    context: context,
+                    message: BaseStrings.officeUpdateSuccessfully,
                     type: SnackBarType.success);
                 Navigator.pushNamed(context, BaseRoute.officeScreen);
-
-              } else if (state is NewOfficeError) {
-                showCustomSnackBar(context: context, message: 'Error: ${state.message}',
+              }
+              else if( state is OfficeDeleted){
+                Navigator.pushNamed(context, BaseRoute.officeScreen);
+              }
+              else if (state is NewOfficeError) {
+                showCustomSnackBar(
+                    context: context,
+                    message: 'Error: ${state.message}',
                     type: SnackBarType.error);
-
               }
             },
             child: Form(
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              key: allKey.newOfficeFormKey,
+              key: allKey.editOfficeFormKey,
               child: BlocBuilder<NewOfficeBloc, NewOfficeState>(
                 builder: (context, state) {
                   return SingleChildScrollView(
@@ -123,7 +144,6 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
                         15.toVSB,
                         CustomTextFormField(
                             focusNode: ofcAddress,
-
                             validator: (val) {
                               return validateOfficeAddress(val);
                             },
@@ -166,9 +186,9 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
                                 .textTheme
                                 .titleMedium
                                 ?.copyWith(
-                                color: BaseColors.blackColors,
-                                fontSize: 24.sp,
-                                fontWeight: FontWeight.w600),
+                                    color: BaseColors.blackColors,
+                                    fontSize: 24.sp,
+                                    fontWeight: FontWeight.w600),
                           ),
                         ),
                         15.toVSB,
@@ -185,25 +205,25 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
                                 children: List.generate(11, (index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      context.read<NewOfficeBloc>().add(
-                                          SelectColor(colorList[index]));
+                                      context
+                                          .read<NewOfficeBloc>()
+                                          .add(SelectColor(colorList[index]));
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         border: Border.all(
-                                          color: selectedColor ==
-                                              colorList[index]
-                                              ? BaseColors.selectColorBorder
-                                              : Colors.transparent,
+                                          color:
+                                              selectedColor == colorList[index]
+                                                  ? BaseColors.selectColorBorder
+                                                  : Colors.transparent,
                                           width: 3.0,
                                         ),
                                       ),
                                       child: CircleAvatar(
                                           backgroundColor: colorList[index],
                                           radius: 19.w,
-                                          child: null
-                                      ),
+                                          child: null),
                                     ),
                                   );
                                 }),
@@ -212,22 +232,36 @@ class _NewOfficeScreenState extends State<NewOfficeScreen> {
                           ),
                         ),
                         20.toVSB,
-                        CustomButton(labelText: BaseStrings.addOffice
-                            .toUpperCase(), onPressed: () {
-                          if (allKey.newOfficeFormKey.currentState!
-                              .validate()) {
-                            final office = OfficeModel(
-                              name: ofcNameController.text,
-                              address: ofcAddressController.text,
-                              email: ofcEmailAddressController.text,
-                              phoneNumber: phoneNumberController.text,
-                              capacity: int.parse(ofCapacityController.text),
-                              color: selectedColor.toString(), // Choose a color
-                            );
-                            context.read<NewOfficeBloc>().add(
-                                AddNewOfficeEvent(officeModel: office));
-                          }
-                        }),
+                        CustomButton(
+                            labelText: BaseStrings.updateOffice.toUpperCase(),
+                            onPressed: () {
+                              if (allKey.editOfficeFormKey.currentState!.validate()) {
+                                final updatedOffice = OfficeModel(
+                                  id:int.parse (widget.office?.id.toString() ??""),
+                                    name: ofcNameController.text,
+                                    phoneNumber: phoneNumberController.text,
+                                    email: ofcEmailAddressController.text,
+                                    address: ofcAddressController.text,
+                                    capacity: int.tryParse(
+                                            ofCapacityController.text) ??
+                                        (widget.office?.capacity ?? 5),color: selectedColor.toString());
+                                context.read<NewOfficeBloc>().add(UpdateOfficeEvent(updatedOffice));
+                              }
+                            }),
+                        TextButton(
+                          onPressed: () {
+                            context.read<NewOfficeBloc>().add(DeleteOffice(int.parse(widget.office?.id.toString() ?? "")));
+                          },
+                          child: Text(
+                            BaseStrings.deleteOffice.toUpperCase(),
+                            style: getTheme(context: context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                    color: BaseColors.btnColor),
+                          ),
+                        )
                       ],
                     ).paddingSymmetric(horizontal: 19),
                   );

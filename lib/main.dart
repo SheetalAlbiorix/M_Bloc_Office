@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:m_bloc_office/core/values/base_colors.dart';
-import 'package:m_bloc_office/modules/office_screen.dart';
+
 import 'package:m_bloc_office/routes/pages.dart';
 import 'package:m_bloc_office/routes/routes.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
+import 'data/provider/db_provider.dart';
+import 'data/services/repository.dart';
+import 'modules/office_listing_screen.dart';
+
+void main() async {
+
+
+
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -14,7 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        initialRoute: BaseRoute.officeViewScreen,
+        initialRoute: BaseRoute.officeScreen,
         onGenerateRoute: AppPages.generateRoute,
       color: BaseColors.canvasColor,
    debugShowCheckedModeBanner: false,
@@ -22,7 +33,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: OfficeScreen()
+      home: const OfficeListingScreen()
     );
   }
 }

@@ -69,6 +69,35 @@ String? validatePhoneNumber(String? value) {
   return null;
 }
 
+String? validateFirstName(String? value) {
+  if (value == null || value.isEmpty) {
+    return "First name is required";
+  }
+
+
+  final RegExp nameRegex = RegExp(r'^[a-zA-Z]+$');
+
+  if (!nameRegex.hasMatch(value)) {
+    return "Please enter a valid first name";
+  }
+
+  return null;
+}
+String? validateLastName(String? value) {
+  if (value == null || value.isEmpty) {
+    return "Last name is required";
+  }
+
+
+  final RegExp nameRegex = RegExp(r'^[a-zA-Z]+$');
+
+  if (!nameRegex.hasMatch(value)) {
+    return "Please enter a valid last name";
+  }
+
+  return null;
+}
+
 
 
 
