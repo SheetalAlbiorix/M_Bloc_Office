@@ -1,6 +1,5 @@
 part of 'new_office_bloc.dart';
 
-
  class NewOfficeState extends Equatable {
 
   const NewOfficeState();
@@ -14,13 +13,6 @@ part of 'new_office_bloc.dart';
   @override
 
   List<Object?> get props => throw UnimplementedError();
-}
-
-
-class NewOfficeUpload extends NewOfficeState {
-  @override
-
-  List<Object?> get props => [];
 }
 
 class OfficeLoading extends NewOfficeState {}
@@ -69,8 +61,45 @@ class avatarSelected extends NewOfficeState {
   @override
   List<Object> get props => [avtar ??""];
 }
+
 class OfficeStaffLoaded extends NewOfficeState {
+
   final List<StaffModel>? staff;
 
-  const OfficeStaffLoaded(this.staff);
+  OfficeStaffLoaded(this.staff);
+}
+
+class StaffUpdateFailure extends NewOfficeState {
+  final String error;
+
+  StaffUpdateFailure(this.error);
+}
+
+class OfficeNoData extends NewOfficeState {}
+
+class OfficeStaffAdded extends NewOfficeState {}
+
+class StaffUpdateSuccess extends NewOfficeState {
+  final StaffModel updatedStaff;
+
+  StaffUpdateSuccess(this.updatedStaff);
+}
+class StaffDeleted extends NewOfficeState {
+
+
+  const StaffDeleted();
+  @override
+  List<Object> get props => [];
+}
+
+class StaffSearchSuccess extends NewOfficeState {
+  final List<StaffModel> filteredStaffList;
+
+  const StaffSearchSuccess(this.filteredStaffList);
+}
+
+class StaffError extends NewOfficeState {
+  final String error;
+
+  StaffError(this.error);
 }

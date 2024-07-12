@@ -37,4 +37,17 @@ class OfficeRepository {
   Future<List<StaffModel>?> readAllStaffByID(int officeId ) async {
     return await officeDatabase?.readStaffByOffice(officeId);
   }
+
+  Future<bool> updateOfficeStaff(StaffModel staff) async {
+    try {
+      await officeDatabase?.updateStaffByOffice(staff);
+      return true;
+    } catch (e) {
+
+      return false;
+    }
+  }
+  Future<void> deleteStaff(int id) async {
+    await officeDatabase?.deleteStaff(id);
+  }
 }

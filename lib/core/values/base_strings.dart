@@ -6,9 +6,12 @@ class BaseStrings {
   static const String allOffices = "All Offices";
   static const String officeAddedSuccessfully = "Office added successfully!";
   static const String officeUpdateSuccessfully = "Office updated successfully!";
+  static const String noStaffMemberAvailable =  'No staff members available';
+
   static const String Office = "Office";
   static const String addOffice = "Add Office";
   static const String updateOffice = "Update Office";
+  static const String updateStaffMember = "update staff member";
 
   static const String staffMemberInOffice = "Staff Members in Office";
   static const String next = "Next";

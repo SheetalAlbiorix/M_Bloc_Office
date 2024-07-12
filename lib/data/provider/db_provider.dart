@@ -127,7 +127,20 @@ class OfficeDatabase {
     return result.map((json) => StaffModel.fromMap(json)).toList();
   }
 
+  Future<void> updateStaffByOffice(StaffModel staff) async {
+    final db = await instance.database;
+    await db.update(
+      'staff',
+      staff.toMap(),
+      where: 'id = ?',
+      whereArgs: [staff.id],
+    );
+  }
 
+  Future<void> deleteStaff(int id) async {
+    final database = await  instance.database;
+    await database.delete('staff', where: 'id = ?', whereArgs: [id]);
+  }
   Future close() async {
     final db = await instance.database;
 

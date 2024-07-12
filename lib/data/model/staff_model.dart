@@ -3,7 +3,7 @@ class StaffModel {
   final String? name;
   final String? lastName;
   final String avtar;
-  final String officeId;
+  final int officeId;
 
 
   StaffModel({
@@ -40,7 +40,7 @@ class StaffModel {
     String? name,
     String? lastName,
     String? avtar,
-    String? officeId,
+    int? officeId,
   }) {
     return StaffModel(
       id: id ?? this.id,
