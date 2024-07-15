@@ -85,7 +85,7 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => NewOfficeBloc(
-          OfficeRepository(officeDatabase: OfficeDatabase.instance)),
+          OfficeRepository(officeDatabase: OfficeDatabase.instance),[]),
       child: Scaffold(
           backgroundColor: BaseColors.canvasColor,
           appBar: CustomAppBar(
@@ -200,7 +200,7 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
                             children: [
                               Wrap(
                                 alignment: WrapAlignment.center,
-                                spacing: 18,
+                                spacing: 11,
                                 runSpacing: 15, // Vertical space between rows
                                 children: List.generate(11, (index) {
                                   return GestureDetector(

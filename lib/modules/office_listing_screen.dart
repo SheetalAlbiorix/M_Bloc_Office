@@ -60,7 +60,7 @@ class _OfficeListingScreenState extends State<OfficeListingScreen> {
     return ScreenUtilInit(
       builder: (context, child) => BlocProvider(
         create: (context) => NewOfficeBloc(
-            OfficeRepository(officeDatabase: OfficeDatabase.instance))
+            OfficeRepository(officeDatabase: OfficeDatabase.instance),[])
           ..add(FetchOffices()),
         child: Scaffold(
           backgroundColor: BaseColors.canvasColor,
@@ -99,7 +99,8 @@ class _OfficeListingScreenState extends State<OfficeListingScreen> {
                   if (state is OfficeLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is OfficeLoaded) {
-                    return Expanded(
+                    return state.offices.isNotEmpty ?
+                      Expanded(
                       child: ListView.builder(
                         itemCount: state.offices.length,
                         itemBuilder: (context, index) {
@@ -275,7 +276,7 @@ class _OfficeListingScreenState extends State<OfficeListingScreen> {
                           ).paddingSymmetric(horizontal: 17, vertical: 10);
                         },
                       ),
-                    );
+                    ) : const Center(child: Text('No Offices Found'));
                   } else if (state is NewOfficeError) {
                     return Center(child: Text(state.message.toString()));
                   } else {

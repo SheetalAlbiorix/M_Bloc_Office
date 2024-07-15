@@ -4,28 +4,31 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:m_bloc_office/core/utils/extensions/base_extensions.dart';
-import 'package:m_bloc_office/core/utils/functions/base_funcations.dart';
-import 'package:m_bloc_office/core/utils/helpers/key.dart';
-import 'package:m_bloc_office/core/utils/widgets/custom_button.dart';
-import 'package:m_bloc_office/core/utils/widgets/custom_textformfield.dart';
-import 'package:m_bloc_office/core/values/base_strings.dart';
-import 'package:m_bloc_office/data/model/new_office_modle.dart';
-import 'package:m_bloc_office/data/model/staff_model.dart';
-import 'package:m_bloc_office/data/services/repository.dart';
-import 'package:m_bloc_office/modules/new_office/new_office_bloc.dart';
+
+
+import '../core/utils/functions/base_funcations.dart';
+import '../core/utils/helpers/key.dart';
 import '../core/utils/widgets/custom_appbar.dart';
+import '../core/utils/widgets/custom_button.dart';
+import '../core/utils/widgets/custom_textformfield.dart';
 import '../core/utils/widgets/detail_widgets.dart';
 import '../core/values/base_assets.dart';
 import '../core/values/base_colors.dart';
+import '../core/values/base_strings.dart';
+import '../data/model/new_office_modle.dart';
+import '../data/model/staff_model.dart';
 import '../data/provider/db_provider.dart';
+import '../data/services/repository.dart';
 import '../routes/routes.dart';
 import 'new_office/Add_staff_dailogWidgets.dart';
 import 'new_office/Edit_staff_dailoWidgets.dart';
+import 'new_office/new_office_bloc.dart';
 
 class OfficeViewScreen extends StatefulWidget {
   final OfficeModel? officeModel;
+  final List<StaffModel> staffList = [];
 
-  const OfficeViewScreen({super.key, this.officeModel});
+  OfficeViewScreen({super.key, this.officeModel});
 
   @override
   State<OfficeViewScreen> createState() => _OfficeViewScreenState();
@@ -70,13 +73,13 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
   ];
 
 
-
   @override
   Widget build(BuildContext context) {
+    final color = Color(int.parse(widget.officeModel!.color.substring(6, 16)));
     return BlocProvider(
       create: (context) =>
       NewOfficeBloc(
-          OfficeRepository(officeDatabase: OfficeDatabase.instance))
+          OfficeRepository(officeDatabase: OfficeDatabase.instance),widget.staffList)
         ..add(FetchOfficeStaff(widget.officeModel?.id ?? 0)),
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
@@ -89,12 +92,13 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
             backgroundColor: const Color(0xff0D4477),
             onPressed: () {
               showDialog(
+                barrierDismissible: false,
                 context: context,
                 builder: (context) {
                   return BlocProvider(
                     create: (context) =>
                         NewOfficeBloc(OfficeRepository(
-                            officeDatabase: OfficeDatabase.instance)),
+                            officeDatabase: OfficeDatabase.instance),[]),
                     child: AddStaffDialogWidget(
                       officeModel: widget.officeModel ??
                           OfficeModel(
@@ -144,8 +148,8 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                             bottomLeft: Radius.circular(10)),
                         gradient: LinearGradient(
                           colors: [
-                            BaseColors.blackColors.withOpacity(0.7),
-                            BaseColors.blackColors
+                            color,
+                            color.withOpacity(0.3)
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -179,7 +183,11 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                               ),
                             ),
                             InkWell(
-                                onTap: () {},
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        BaseRoute.editOfficeScreen,arguments: widget.officeModel);
+                                  },
+
                                 child: SvgPicture.asset(BaseAssets.editIcon)),
                           ],
                         ),
@@ -281,29 +289,37 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
               ),
             ).paddingSymmetric(horizontal: 17, vertical: 10),
             24.toVSB,
-            CustomTextFormField(
-                suffixIcon: IconButton(
-                    onPressed: () {
+            BlocBuilder<NewOfficeBloc, NewOfficeState>(
+              builder: (context, state) {
+                return CustomTextFormField(
+                    suffixIcon: IconButton(
+                        onPressed: () {
 
-                    },
-                    icon: const Icon(
-                      Icons.search,
-                      color: BaseColors.blackColors,
-                    )),
-                labelText: BaseStrings.search,
-                controller: searchController,
-                onChanged: (val) {
-                  BlocProvider.of<NewOfficeBloc>(context).add(SearchStaff(val));
-                })
+                          // searchController.clear();
+                          // context.read<NewOfficeBloc>().add(SearchStaff( query: ''));
+                        },
+                        icon: const Icon(
+                          Icons.search,
+                          color: BaseColors.blackColors,
+                        )),
+                    labelText: BaseStrings.search,
+                    controller: searchController,
+                    onChanged: (val) {
+                      BlocProvider.of<NewOfficeBloc>(context).add(SearchStaff(query: val));
+                    });
+              },
+            )
                 .paddingSymmetric(horizontal: 16, vertical: 0),
+            10.toVSB,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   BaseStrings.staffMemberInOffice,
                   style: getTheme(context: context).textTheme.titleLarge,
                 ),
+
                 Text(
                   (widget.officeModel?.capacity ?? "").toString(),
                   style: getTheme(context: context)
@@ -314,23 +330,26 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
               ],
             ).paddingOnly(left: 12, right: 24),
             13.toVSB,
-            BlocBuilder<NewOfficeBloc, NewOfficeState>(
-              builder: (context, state) {
-                if (state is OfficeLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is OfficeStaffLoaded) {
-                  return Expanded(
-                    child: ListView.builder(
+            Expanded(
+              child: BlocBuilder<NewOfficeBloc, NewOfficeState>(
+                builder: (context, state) {
+                  if (state is OfficeLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is OfficeStaffLoaded) {
+                    return  (state.staff ?? []).isEmpty
+                        ? const Center(
+                      child: Text(BaseStrings.noStaffMemberAvailable),
+                    ) :
+                    ListView.builder(
                       itemCount: state.staff?.length,
                       itemBuilder: (context, index) {
-
                         return ListTile(
                           contentPadding:
                           const EdgeInsets.symmetric(horizontal: 12),
                           trailing: IconButton(
                               onPressed: () {
                                 showDialog(
-                                  barrierDismissible: false,
+                                    barrierDismissible: false,
                                     context: context,
                                     builder: (context) {
                                       return staffMemberMoreOptionDialog(
@@ -349,32 +368,50 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                             child: SvgPicture.asset(state.staff![index].avtar),
                           ),
                           title: Text(
-                              "${state.staff?[index].name} ${state.staff?[index].lastName} "),
+                              "${state.staff?[index].name} ${state.staff?[index]
+                                  .lastName} "),
                         );
                       },
-                    ),
-                  );
-                } else if (state is OfficeNoData) {
-                  return const Center(
-                      child: Text(BaseStrings.noStaffMemberAvailable));
-                }
-                else if (state is StaffSearchSuccess) {
-                  return ListView.builder(
-                    itemCount: state.filteredStaffList.length,
-                    itemBuilder: (context, index) {
-                      final staff = state.filteredStaffList[index];
-                      return ListTile(
-                        title: Text(staff.name.toString()),
-                        subtitle: Text(staff.lastName.toString()),
-                        onTap: () {
-                          // Handle staff selection
-                        },
-                      );
-                    },
-                  );
-                }
-                return const Center(child: Text('No data'));
-              },
+                    );
+                  } else if (state is OfficeNoData) {
+                    return const Center(
+                        child: Text(BaseStrings.noStaffMemberAvailable));
+                  }
+                  else if (state is StaffSearchSuccess) {
+                    return ListView.builder(
+                      itemCount: state.filteredStaffList.length,
+                      itemBuilder: (context, index) {
+                        final filteredStaff = state.filteredStaffList[index];
+                        return ListTile(
+                          contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
+                          trailing: IconButton(
+                              onPressed: () {
+                                showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (context) {
+                                      return staffMemberMoreOptionDialog(
+                                          context,filteredStaff);
+                                    });
+                              },
+                              icon: const Icon(
+                                Icons.more_vert,
+                                size: 24,
+                              )),
+                          leading: CircleAvatar(
+                            child: SvgPicture.asset(filteredStaff.avtar),
+                          ),
+                          title: Text(
+                              "${filteredStaff.name} ${filteredStaff
+                                  .lastName} "),
+                        );
+                      },
+                    );
+                  }
+                  return const Center(child: Text('No data'));
+                },
+              ),
             )
           ],
         ),
@@ -402,13 +439,13 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
             onPressed: () {
               Navigator.of(context).pop();
               showDialog(
-                barrierDismissible: false,
+                  barrierDismissible: false,
                   context: context,
                   builder: (context) {
                     return BlocProvider(
                         create: (context) =>
                             NewOfficeBloc(OfficeRepository(
-                                officeDatabase: OfficeDatabase.instance)),
+                                officeDatabase: OfficeDatabase.instance),[]),
                         child: EditStaffDailowidgets(
                           staffModel: staffModel,
                         ));
@@ -422,14 +459,14 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
               showDialog(
                   context: context,
                   builder: (context) {
-                    return BlocProvider(create: (context) => NewOfficeBloc(OfficeRepository(
-                        officeDatabase: OfficeDatabase.instance)),
-                        child: deleteStaffMemberMoreOptionDialog(
-                            context, staffModel.id.toString()), );
+                    return BlocProvider(create: (context) =>
+                        NewOfficeBloc(OfficeRepository(
+                            officeDatabase: OfficeDatabase.instance),[]),
+                      child: deleteStaffMemberMoreOptionDialog(
+                          context, staffModel.id.toString()),);
                   }
 
               );
-
             },
             child: Text(
               BaseStrings.deleteStaff.toUpperCase(),
@@ -448,7 +485,7 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
     return BlocProvider(
       create: (context) =>
           NewOfficeBloc(
-              OfficeRepository(officeDatabase: OfficeDatabase.instance)),
+              OfficeRepository(officeDatabase: OfficeDatabase.instance),[]),
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         backgroundColor: const Color(0xffF8FAFC),

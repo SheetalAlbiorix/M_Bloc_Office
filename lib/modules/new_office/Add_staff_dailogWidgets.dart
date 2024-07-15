@@ -117,7 +117,7 @@ class AddStaffDialogWidgetState extends State<AddStaffDialogWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  height: 110.h,
+                  height: 137.h,
                   child: PageView(
                     controller: pageController,
                     onPageChanged: (int page) {
@@ -136,7 +136,7 @@ class AddStaffDialogWidgetState extends State<AddStaffDialogWidget> {
                                 return validateFirstName(val);
                               },
                               onChanged: (val) {}),
-                          10.toVSB,
+                          5.toVSB,
                           CustomTextFormField(
                             labelText: BaseStrings.lastName,
                             controller: lastNameContr,

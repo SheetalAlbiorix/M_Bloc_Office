@@ -7,6 +7,7 @@ class BaseStrings {
   static const String officeAddedSuccessfully = "Office added successfully!";
   static const String officeUpdateSuccessfully = "Office updated successfully!";
   static const String noStaffMemberAvailable =  'No staff members available';
+  static const String kindlySelectAnyOneColor =  'kindly Select any one Color';
 
   static const String Office = "Office";
   static const String addOffice = "Add Office";
