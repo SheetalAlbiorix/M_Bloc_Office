@@ -3,11 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:m_bloc_office/core/utils/extensions/base_extensions.dart';
-import 'package:m_bloc_office/core/utils/functions/base_funcations.dart';
+
 
 
 import '../../values/base_colors.dart';
 import '../../values/base_strings.dart';
+import '../functions/base_funcations.dart';
 
 class CustomDialogScreen extends StatelessWidget {
   final String? title;

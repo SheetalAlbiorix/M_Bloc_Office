@@ -1,7 +1,8 @@
 
-import 'package:m_bloc_office/data/model/new_office_modle.dart';
-import 'package:m_bloc_office/data/model/staff_model.dart';
 
+
+import '../model/new_office_modle.dart';
+import '../model/staff_model.dart';
 import '../provider/db_provider.dart';
 
 

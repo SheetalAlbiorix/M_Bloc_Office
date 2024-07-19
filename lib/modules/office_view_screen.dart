@@ -28,7 +28,7 @@ class OfficeViewScreen extends StatefulWidget {
   final OfficeModel? officeModel;
   final List<StaffModel> staffList = [];
 
-  OfficeViewScreen({super.key, this.officeModel});
+   OfficeViewScreen({super.key, this.officeModel});
 
   @override
   State<OfficeViewScreen> createState() => _OfficeViewScreenState();
@@ -183,11 +183,7 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                               ),
                             ),
                             InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(context,
-                                        BaseRoute.editOfficeScreen,arguments: widget.officeModel);
-                                  },
-
+                                onTap: () {},
                                 child: SvgPicture.asset(BaseAssets.editIcon)),
                           ],
                         ),
@@ -310,16 +306,14 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
               },
             )
                 .paddingSymmetric(horizontal: 16, vertical: 0),
-            10.toVSB,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   BaseStrings.staffMemberInOffice,
                   style: getTheme(context: context).textTheme.titleLarge,
                 ),
-
                 Text(
                   (widget.officeModel?.capacity ?? "").toString(),
                   style: getTheme(context: context)
@@ -340,7 +334,7 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                         ? const Center(
                       child: Text(BaseStrings.noStaffMemberAvailable),
                     ) :
-                    ListView.builder(
+                      ListView.builder(
                       itemCount: state.staff?.length,
                       itemBuilder: (context, index) {
                         return ListTile(

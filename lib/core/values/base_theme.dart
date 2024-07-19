@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:m_bloc_office/core/values/base_colors.dart';
+
+import 'base_colors.dart';
 import 'base_strings.dart';
 
 class ThemeStyle {

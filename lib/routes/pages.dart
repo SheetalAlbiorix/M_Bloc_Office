@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:m_bloc_office/data/model/new_office_modle.dart';
-import 'package:m_bloc_office/data/model/staff_model.dart';
-import 'package:m_bloc_office/modules/office_listing_screen.dart';
-
-import 'package:m_bloc_office/modules/office_view_screen.dart';
 import 'package:m_bloc_office/routes/routes.dart';
 
+
+
+import '../data/model/new_office_modle.dart';
 import '../modules/new_office/Edit_screen.dart';
 import '../modules/new_office/Edit_staff_dailoWidgets.dart';
 import '../modules/new_office/new_office_screen.dart';
+import '../modules/office_listing_screen.dart';
+import '../modules/office_view_screen.dart';
 
 class AppPages {
   static Route<dynamic> generateRoute(RouteSettings settings) {

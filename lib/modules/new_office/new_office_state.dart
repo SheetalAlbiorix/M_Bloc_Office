@@ -1,13 +1,13 @@
 part of 'new_office_bloc.dart';
 
-class NewOfficeState extends Equatable {
+ class NewOfficeState extends Equatable {
 
   const NewOfficeState();
   @override
   List<Object?> get props => [];
 }
 
-class NewOfficeInitial extends NewOfficeState {
+ class NewOfficeInitial extends NewOfficeState {
 
   const NewOfficeInitial();
   @override

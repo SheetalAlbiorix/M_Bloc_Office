@@ -113,7 +113,6 @@ class NewOfficeBloc extends Bloc<NewOfficeEvent, NewOfficeState> {
       if ((staffList ?? []).isEmpty) {
         emit(OfficeNoData());
       } else {
-        emit(OfficeLoading());
         staffLists.addAll(staffList ?? []);
         emit(OfficeStaffLoaded(staffList));
       }
@@ -154,9 +153,8 @@ class NewOfficeBloc extends Bloc<NewOfficeEvent, NewOfficeState> {
       if (emit is StaffDeleted) {
         if (event is FetchStaff) {
           final staffList =
-          await officeRepository.readAllStaffByID(event.officeId);
+              await officeRepository.readAllStaffByID(event.officeId);
           emit(StaffLoaded(staffList ?? []));
-          emit(OfficeLoading());
         }
       }
     } catch (e) {

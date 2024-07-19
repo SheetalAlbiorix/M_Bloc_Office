@@ -1,6 +1,6 @@
 part of 'new_office_bloc.dart';
 
-class NewOfficeEvent extends Equatable{
+  class NewOfficeEvent extends Equatable{
   const NewOfficeEvent();
   @override
 
@@ -13,8 +13,8 @@ class AddNewOfficeEvent extends NewOfficeEvent {
 
   const AddNewOfficeEvent(
       {
-        required this.officeModel
-      });
+   required this.officeModel
+  });
 
   @override
   List<Object> get props => [officeModel ?? [] ];

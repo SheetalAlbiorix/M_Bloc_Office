@@ -3,20 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:m_bloc_office/core/utils/extensions/base_extensions.dart';
-import 'package:m_bloc_office/core/utils/functions/base_funcations.dart';
-import 'package:m_bloc_office/core/utils/helpers/key.dart';
-import 'package:m_bloc_office/core/utils/widgets/custom_appbar.dart';
-import 'package:m_bloc_office/core/utils/widgets/custom_button.dart';
-import 'package:m_bloc_office/core/utils/widgets/custom_textformfield.dart';
-import 'package:m_bloc_office/core/values/base_strings.dart';
-import 'package:m_bloc_office/data/model/new_office_modle.dart';
-import 'package:m_bloc_office/data/services/repository.dart';
-
-import 'package:m_bloc_office/routes/routes.dart';
+import '../../core/utils/functions/base_funcations.dart';
+import '../../core/utils/helpers/key.dart';
 import '../../core/utils/helpers/validators.dart';
+import '../../core/utils/widgets/custom_appbar.dart';
+import '../../core/utils/widgets/custom_button.dart';
+import '../../core/utils/widgets/custom_textformfield.dart';
 import '../../core/values/base_colors.dart';
+import '../../core/values/base_strings.dart';
 import '../../data/enums/enums.dart';
+import '../../data/model/new_office_modle.dart';
 import '../../data/provider/db_provider.dart';
+import '../../data/services/repository.dart';
+import '../../routes/routes.dart';
 import 'new_office_bloc.dart';
 
 class EditOfficeScreen extends StatefulWidget {
@@ -200,7 +199,7 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
                             children: [
                               Wrap(
                                 alignment: WrapAlignment.center,
-                                spacing: 11,
+                                spacing: 18,
                                 runSpacing: 15, // Vertical space between rows
                                 children: List.generate(11, (index) {
                                   return GestureDetector(

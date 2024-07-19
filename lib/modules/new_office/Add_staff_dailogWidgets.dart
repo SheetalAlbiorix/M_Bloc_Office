@@ -4,13 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:m_bloc_office/core/utils/extensions/base_extensions.dart';
-import 'package:m_bloc_office/core/values/base_colors.dart';
+
+
 import '../../core/utils/functions/base_funcations.dart';
 import '../../core/utils/helpers/key.dart';
 import '../../core/utils/helpers/validators.dart';
 import '../../core/utils/widgets/custom_button.dart';
 import '../../core/utils/widgets/custom_textformfield.dart';
 import '../../core/values/base_assets.dart';
+import '../../core/values/base_colors.dart';
 import '../../core/values/base_strings.dart';
 import '../../data/model/new_office_modle.dart';
 import '../../data/model/staff_model.dart';
@@ -117,7 +119,7 @@ class AddStaffDialogWidgetState extends State<AddStaffDialogWidget> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  height: 137.h,
+                  height: 126.h,
                   child: PageView(
                     controller: pageController,
                     onPageChanged: (int page) {
@@ -136,7 +138,7 @@ class AddStaffDialogWidgetState extends State<AddStaffDialogWidget> {
                                 return validateFirstName(val);
                               },
                               onChanged: (val) {}),
-                          5.toVSB,
+                          10.toVSB,
                           CustomTextFormField(
                             labelText: BaseStrings.lastName,
                             controller: lastNameContr,

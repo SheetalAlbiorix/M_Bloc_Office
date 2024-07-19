@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:m_bloc_office/core/values/base_colors.dart';
+
+import '../../values/base_colors.dart';
 
 class CustomAppBar extends AppBar implements PreferredSizeWidget {
   final Widget? customLeading;

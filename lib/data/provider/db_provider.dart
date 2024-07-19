@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
-import 'package:m_bloc_office/data/model/new_office_modle.dart';
-import 'package:m_bloc_office/data/model/staff_model.dart';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
+import '../model/new_office_modle.dart';
+import '../model/staff_model.dart';
 
 
 class OfficeDatabase {
@@ -58,6 +60,7 @@ class OfficeDatabase {
     ''');
     debugPrint("Created table: staff");
   }
+
 
   Future<OfficeModel> create(OfficeModel office) async {
     final db = await instance.database;
