@@ -75,7 +75,7 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final color = Color(int.parse(widget.officeModel!.color.substring(6, 16)));
+    final color = Color(int.parse(widget.officeModel!.color));
     return BlocProvider(
       create: (context) =>
       NewOfficeBloc(
@@ -147,10 +147,22 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                             topLeft: Radius.circular(10),
                             bottomLeft: Radius.circular(10)),
                         gradient: LinearGradient(
-                          colors: [
-                            color,
-                            color.withOpacity(0.3)
-                          ],
+                            stops: const [
+                              0,
+                              0.4,
+                              0.4,
+                              0.7,
+                              0.7,
+                              1.0
+                            ],
+                            colors: [
+                              color,
+                              color,
+                              color.withOpacity(.6),
+                              color.withOpacity(.6),
+                              color.withOpacity(.3),
+                              color.withOpacity(.3),
+                            ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -166,21 +178,15 @@ class _OfficeViewScreenState extends State<OfficeViewScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, BaseRoute.officeViewScreen);
-                              },
-                              child: Text(
-                                widget.officeModel?.name ?? "",
-                                style: getTheme(context: context)
-                                    .textTheme
-                                    .headlineMedium
-                                    ?.copyWith(
-                                    color: BaseColors.allOfficeTextColor,
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w800),
-                              ),
+                            Text(
+                              widget.officeModel?.name ?? "",
+                              style: getTheme(context: context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(
+                                  color: BaseColors.allOfficeTextColor,
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.w800),
                             ),
                             InkWell(
                                 onTap: () {},

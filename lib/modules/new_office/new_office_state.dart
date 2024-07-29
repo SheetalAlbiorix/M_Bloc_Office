@@ -29,7 +29,7 @@ class  NewOfficeError extends NewOfficeState {
 }
 
 class ColorSelected extends NewOfficeState {
-  final Color selectedColor;
+  final String selectedColor;
 
   const ColorSelected(this.selectedColor);
 

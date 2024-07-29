@@ -15,7 +15,7 @@ class NewOfficeBloc extends Bloc<NewOfficeEvent, NewOfficeState> {
   final OfficeRepository officeRepository;
 
   final List<StaffModel> staffLists;
-  Color? selectedColor;
+  String? selectedColor;
 
   NewOfficeBloc(this.officeRepository, this.staffLists)
       : super(const NewOfficeInitial()) {
@@ -61,8 +61,8 @@ class NewOfficeBloc extends Bloc<NewOfficeEvent, NewOfficeState> {
   Future<void> addOfficeSelectedColor(
       NewOfficeEvent event, Emitter<NewOfficeState> emit) async {
     if (event is SelectColor) {
-      selectedColor = event.color;
-      emit(ColorSelected(event.color));
+      selectedColor =event.color;
+      emit(ColorSelected(event.color.toString()));
     }
   }
 

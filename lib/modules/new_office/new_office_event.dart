@@ -22,7 +22,7 @@ class AddNewOfficeEvent extends NewOfficeEvent {
 
 
 class SelectColor extends NewOfficeEvent {
-  final Color color;
+  final String color;
 
   const SelectColor(this.color);
 

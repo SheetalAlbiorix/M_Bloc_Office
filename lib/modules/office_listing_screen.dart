@@ -36,14 +36,12 @@ class _OfficeListingScreenState extends State<OfficeListingScreen> {
     });
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       builder: (context, child) => BlocProvider(
         create: (context) => NewOfficeBloc(
-            OfficeRepository(officeDatabase: OfficeDatabase.instance),[])
+            OfficeRepository(officeDatabase: OfficeDatabase.instance), [])
           ..add(FetchOffices()),
         child: Scaffold(
           backgroundColor: BaseColors.canvasColor,
@@ -88,229 +86,208 @@ class _OfficeListingScreenState extends State<OfficeListingScreen> {
                               itemCount: state.offices.length,
                               itemBuilder: (context, index) {
                                 final office = state.offices[index];
-                                final color = Color(int.parse(office.color.substring(6, 16)));
+                                final color = Color(int.parse(office.color));
                                 return AnimatedContainer(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12)),
+                                  height: expanded![index] ? 270.h : 132.h,
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Stack(
+                                    children: [
+                                      Positioned(
+                                        left: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        child: Container(
+                                          width: 10, // Adjust width as needed
+                                          decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(12)),
-                                        height:
-                                            expanded![index] ? 270.h : 132.h,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                        child: Stack(
+                                                const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(10),
+                                                    bottomLeft:
+                                                        Radius.circular(10)),
+                                            gradient: LinearGradient(
+                                              stops: const [
+                                                0,
+                                                0.4,
+                                                0.4,
+                                                0.7,
+                                                0.7,
+                                                1.0
+                                              ],
+                                              colors: [
+                                                color,
+                                                color,
+                                                color.withOpacity(.6),
+                                                color.withOpacity(.6),
+                                                color.withOpacity(.3),
+                                                color.withOpacity(.3),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 22, right: 16, top: 17),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
                                           children: [
-                                            Positioned(
-                                              left: 0,
-                                              top: 0,
-                                              bottom: 0,
-                                              child: Container(
-                                                width:
-                                                    10, // Adjust width as needed
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  10),
-                                                          bottomLeft:
-                                                              Radius.circular(
-                                                                  10)),
-                                                  gradient: LinearGradient(
-                                                    colors: [
-                                                      color,
-                                                      color.withOpacity(0.5),
-                                                    ],
-                                                    begin: Alignment.topLeft,
-                                                    end: Alignment.bottomRight,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pushNamed(
+                                                        context,
+                                                        BaseRoute
+                                                            .officeViewScreen,
+                                                        arguments: state
+                                                            .offices[index]);
+                                                  },
+                                                  child: Text(
+                                                    state.offices[index].name,
+                                                    style: getTheme(
+                                                            context: context)
+                                                        .textTheme
+                                                        .headlineMedium
+                                                        ?.copyWith(
+                                                            color: BaseColors
+                                                                .allOfficeTextColor,
+                                                            fontSize: 24.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w800),
                                                   ),
                                                 ),
-                                              ),
+                                                InkWell(
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                          context,
+                                                          BaseRoute
+                                                              .editOfficeScreen,
+                                                          arguments: state
+                                                              .offices[index]);
+                                                    },
+                                                    child: SvgPicture.asset(
+                                                        BaseAssets.editIcon)),
+                                              ],
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 22, right: 16, top: 17),
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          Navigator.pushNamed(
-                                                              context,
-                                                              BaseRoute
-                                                                  .officeViewScreen,
-                                                              arguments:
-                                                                  state.offices[
-                                                                      index]);
-                                                        },
-                                                        child: Text(
-                                                          state.offices[index]
-                                                              .name,
-                                                          style: getTheme(
-                                                                  context:
-                                                                      context)
-                                                              .textTheme
-                                                              .headlineMedium
-                                                              ?.copyWith(
-                                                                  color: BaseColors
-                                                                      .allOfficeTextColor,
-                                                                  fontSize:
-                                                                      24.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w800),
-                                                        ),
-                                                      ),
-                                                      InkWell(
-                                                          onTap: () {
-                                                            Navigator.pushNamed(
-                                                                context,
-                                                                BaseRoute
-                                                                    .editOfficeScreen,
-                                                                arguments: state
-                                                                        .offices[
-                                                                    index]);
-                                                          },
-                                                          child: SvgPicture
-                                                              .asset(BaseAssets
-                                                                  .editIcon)),
-                                                    ],
-                                                  ),
-                                                  11.toVSB,
-                                                  Row(
-                                                    children: <Widget>[
-                                                      SvgPicture.asset(
-                                                          BaseAssets
-                                                              .peopleOverView),
-                                                      12.toHSB,
-                                                      Text.rich(TextSpan(
-                                                          text:
-                                                              "${state.offices[index].capacity.toString()}  ",
-                                                          style: TextStyle(
+                                            11.toVSB,
+                                            Row(
+                                              children: <Widget>[
+                                                SvgPicture.asset(
+                                                    BaseAssets.peopleOverView),
+                                                12.toHSB,
+                                                Text.rich(TextSpan(
+                                                    text:
+                                                        "${state.offices[index].capacity.toString()}  ",
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                                    children: <InlineSpan>[
+                                                      TextSpan(
+                                                        text:
+                                                            'Staff Members in Office',
+                                                        style: TextStyle(
                                                             fontSize: 12.sp,
                                                             fontWeight:
-                                                                FontWeight.w700,
-                                                          ),
-                                                          children: <InlineSpan>[
-                                                            TextSpan(
-                                                              text:
-                                                                  'Staff Members in Office',
-                                                              style: TextStyle(
-                                                                  fontSize:
-                                                                      12.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: BaseColors
-                                                                      .allOfficeTextColor,
-                                                                  fontFamily:
-                                                                      BaseStrings
-                                                                          .interRegular),
-                                                            )
-                                                          ])),
-                                                    ],
-                                                  ),
-                                                  9.toVSB,
-                                                  Divider(
-                                                    indent: 5,
-                                                    endIndent: 10,
-                                                    height: 0.4.h,
-                                                    color:
-                                                        const Color(0xff0D4477),
-                                                  ),
-                                                  11.toVSB,
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: <Widget>[
-                                                      InkWell(
-                                                        onTap: () {
-                                                          isExpanded(index);
-                                                        },
-                                                        child: Text(
-                                                          "More info",
-                                                          style: getTheme(
-                                                                  context:
-                                                                      context)
-                                                              .textTheme
-                                                              .titleMedium
-                                                              ?.copyWith(
-                                                                  color: BaseColors
-                                                                      .allOfficeTextColor,
-                                                                  fontSize:
-                                                                      12.sp,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400),
-                                                        ),
-                                                      ),
-                                                      5.toHSB,
-                                                      SvgPicture.asset(
-                                                        expanded![index] ==
-                                                                false
-                                                            ? BaseAssets
-                                                                .downArrow
-                                                            : BaseAssets
-                                                                .upArrow,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  if (expanded![index]) ...[
-                                                    Expanded(
-                                                      child: ListView(
-                                                        physics:
-                                                            const NeverScrollableScrollPhysics(),
-                                                        children: [
-                                                          12.toVSB,
-                                                          customIconWithText(
-                                                              BaseAssets
-                                                                  .callIcon,
-                                                              state
-                                                                  .offices[
-                                                                      index]
-                                                                  .phoneNumber,
-                                                              context),
-                                                          12.toVSB,
-                                                          customIconWithText(
-                                                              BaseAssets
-                                                                  .mailIcon,
-                                                              state
-                                                                  .offices[
-                                                                      index]
-                                                                  .email,
-                                                              context),
-                                                          12.toVSB,
-                                                          customIconWithText(
-                                                              BaseAssets
-                                                                  .peopledIcon,
-                                                              "Office Capacity: ${state.offices[index].capacity}",
-                                                              context),
-                                                          12.toVSB,
-                                                          customIconWithText(
-                                                              BaseAssets
-                                                                  .locationIcon,
-                                                              state
-                                                                  .offices[
-                                                                      index]
-                                                                  .address,
-                                                              context),
-                                                        ],
-                                                      ),
-                                                    )
-                                                  ]
-                                                ],
-                                              ),
+                                                                FontWeight.w400,
+                                                            color: BaseColors
+                                                                .allOfficeTextColor,
+                                                            fontFamily: BaseStrings
+                                                                .interRegular),
+                                                      )
+                                                    ])),
+                                              ],
                                             ),
+                                            9.toVSB,
+                                            Divider(
+                                              indent: 5,
+                                              endIndent: 10,
+                                              height: 0.4.h,
+                                              color: const Color(0xff0D4477),
+                                            ),
+                                            11.toVSB,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                InkWell(
+                                                  onTap: () {
+                                                    isExpanded(index);
+                                                  },
+                                                  child: Text(
+                                                    "More info",
+                                                    style: getTheme(
+                                                            context: context)
+                                                        .textTheme
+                                                        .titleMedium
+                                                        ?.copyWith(
+                                                            color: BaseColors
+                                                                .allOfficeTextColor,
+                                                            fontSize: 12.sp,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w400),
+                                                  ),
+                                                ),
+                                                5.toHSB,
+                                                SvgPicture.asset(
+                                                  expanded![index] == false
+                                                      ? BaseAssets.downArrow
+                                                      : BaseAssets.upArrow,
+                                                ),
+                                              ],
+                                            ),
+                                            if (expanded![index]) ...[
+                                              Expanded(
+                                                child: ListView(
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  children: [
+                                                    12.toVSB,
+                                                    customIconWithText(
+                                                        BaseAssets.callIcon,
+                                                        state.offices[index]
+                                                            .phoneNumber,
+                                                        context),
+                                                    12.toVSB,
+                                                    customIconWithText(
+                                                        BaseAssets.mailIcon,
+                                                        state.offices[index]
+                                                            .email,
+                                                        context),
+                                                    12.toVSB,
+                                                    customIconWithText(
+                                                        BaseAssets.peopledIcon,
+                                                        "Office Capacity: ${state.offices[index].capacity}",
+                                                        context),
+                                                    12.toVSB,
+                                                    customIconWithText(
+                                                        BaseAssets.locationIcon,
+                                                        state.offices[index]
+                                                            .address,
+                                                        context),
+                                                  ],
+                                                ),
+                                              )
+                                            ]
                                           ],
                                         ),
-                                      ).paddingSymmetric(
-                                        horizontal: 17, vertical: 10);
+                                      ),
+                                    ],
+                                  ),
+                                ).paddingSymmetric(
+                                    horizontal: 17, vertical: 10);
                               },
                             ),
                           )
