@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,20 +29,20 @@ class EditOfficeScreen extends StatefulWidget {
 }
 
 class _EditOfficeScreenState extends State<EditOfficeScreen> {
-  List<Color> colorList = [
-    const Color(0xffFFBE0B),
-    const Color(0xffFF9B71),
-    const Color(0xffFB5607),
-    const Color(0xff97512C),
-    const Color(0xffDBBADD),
-    const Color(0xffFF006E),
-    const Color(0xffA9F0D1),
-    const Color(0xff00B402),
-    const Color(0xff489DDA),
-    const Color(0xff0072E8),
-    const Color(0xff8338EC),
+  List<String> colorList = [
+   "0xffFFBE0B",
+   "0xffFF9B71",
+   "0xffFB5607",
+   "0xff97512C",
+   "0xffDBBADD",
+   "0xffFF006E",
+   "0xffA9F0D1",
+   "0xff00B402",
+   "0xff489DDA",
+   "0xff0072E8",
+   "0xff8338EC",
   ];
-  Color? selectedColor;
+  String? selectedColor;
   final TextEditingController ofcNameController = TextEditingController();
   final TextEditingController ofcAddressController = TextEditingController();
   final TextEditingController ofcEmailAddressController =
@@ -66,18 +67,17 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
 
   @override
   void initState() {
-    if (widget.office != null) {
-      ofcNameController.text = widget.office?.name ?? "";
-      phoneNumberController.text = widget.office?.phoneNumber ?? "";
-      ofCapacityController.text = widget.office?.capacity.toString() ?? "";
-      ofcAddressController.text = widget.office?.address ?? "";
-      ofcEmailAddressController.text = widget.office?.email ?? "";
-      String? colorString = widget.office?.color;
-      if (colorString != null) {
-        selectedColor = Color(int.parse(colorString.substring(6, 16)));
-      }
-    }
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      if (widget.office != null) {
+        ofcNameController.text = widget.office?.name ?? "";
+        phoneNumberController.text = widget.office?.phoneNumber ?? "";
+        ofCapacityController.text = widget.office?.capacity.toString() ?? "";
+        ofcAddressController.text = widget.office?.address ?? "";
+        ofcEmailAddressController.text = widget.office?.email ?? "";
+      }
+    });
+    selectedColor = widget.office?.color ?? colorList[0].toString();
   }
 
   @override
@@ -102,10 +102,11 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
           ),
           body: BlocListener<NewOfficeBloc, NewOfficeState>(
             listener: (context, state) {
-              if (state is OfficeLoading) {
-                const CircularProgressIndicator();
-              } else if (state is ColorSelected) {
-                selectedColor = state.selectedColor;
+             if (state is ColorSelected) {
+
+                 selectedColor = state.selectedColor;
+
+
               } else if (state is OfficeAdded) {
                 showCustomSnackBar(
                     context: context,
@@ -128,6 +129,7 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
               key: allKey.editOfficeFormKey,
               child: BlocBuilder<NewOfficeBloc, NewOfficeState>(
                 builder: (context, state) {
+
                   return SingleChildScrollView(
                     child: Column(
                       children: [
@@ -193,20 +195,18 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
                         15.toVSB,
                         SizedBox(
                           width: (24.w * 10) * 6 - 11,
-                          // Width for 6 avatars + spacing
-                          child: Column(
+                          child: Column (
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Wrap(
                                 alignment: WrapAlignment.center,
-                                spacing: 18,
-                                runSpacing: 15, // Vertical space between rows
+                                spacing: 11,
+                                runSpacing: 15,
                                 children: List.generate(11, (index) {
                                   return GestureDetector(
                                     onTap: () {
-                                      context
-                                          .read<NewOfficeBloc>()
-                                          .add(SelectColor(colorList[index]));
+                                        BlocProvider.of<NewOfficeBloc>(context)
+                                            .add(SelectColor(colorList[index].toString()));
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -220,7 +220,7 @@ class _EditOfficeScreenState extends State<EditOfficeScreen> {
                                         ),
                                       ),
                                       child: CircleAvatar(
-                                          backgroundColor: colorList[index],
+                                          backgroundColor: Color(int.parse(colorList[index])),
                                           radius: 19.w,
                                           child: null),
                                     ),
